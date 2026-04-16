@@ -16,11 +16,14 @@ echo "Pulling models..."
 # Best coding model for Railway: qwen2.5-coder:1.5b
 MODELS="${MODELS:-qwen2.5-coder:1.5b}"
 
-IFS=',' read -ra MODEL_ARRAY <<< "$MODELS"
-for model in "${MODEL_ARRAY[@]}"; do
+# MODELS can be provided as a comma-separated or newline-separated list.
+while IFS= read -r model; do
+    model="$(echo "$model" | xargs)"
+    [ -z "$model" ] && continue
+
     echo "Pulling model: $model"
     ollama pull "$model" || echo "Failed to pull $model, continuing..."
-done
+done < <(echo "$MODELS" | tr ',' '\n')
 
 echo "All models pulled!"
 
