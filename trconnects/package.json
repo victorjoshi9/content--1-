@@ -1,7 +1,7 @@
 {
   "name": "trconnects",
   "version": "1.0.0",
-  "description": "Unified CLI for Ollama, Claude, Qwen, and LLM integration",
+  "description": "Unified CLI for NVIDIA NIM with task-based 3-model routing",
   "main": "src/index.js",
   "bin": {
     "trconnects": "./bin/trconnects"
@@ -12,7 +12,7 @@
     "install-models": "node scripts/install-models.js",
     "setup": "node scripts/setup.js"
   },
-  "keywords": ["cli", "ollama", "claude", "qwen", "llm", "ai", "code-generation"],
+  "keywords": ["cli", "nvidia", "nim", "qwen", "llm", "ai", "code-generation"],
   "author": "trconnects",
   "license": "MIT",
   "dependencies": {

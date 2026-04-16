@@ -1,0 +1,42 @@
+{
+  "web": [
+    "qwen2.5-coder-32b-instruct-q4",
+    "llama3.1-70b-instruct-q4",
+    "mixtral-8x7b-instruct-q4"
+  ],
+  "webapp": [
+    "qwen2.5-72b-instruct-q4",
+    "qwen2.5-coder-32b-instruct-q4",
+    "mixtral-8x7b-instruct-q4"
+  ],
+  "android": [
+    "qwen2.5-coder-32b-instruct-q4",
+    "deepseek-r1-distill-70b-q4",
+    "llama3.1-70b-instruct-q4"
+  ],
+  "chatbot": [
+    "llama3.1-70b-instruct-q4",
+    "nemotron-70b-instruct-q4",
+    "mistral-large-2-instruct-q4"
+  ],
+  "ui_design": [
+    "qwen2.5-72b-instruct-q4",
+    "mistral-large-2-instruct-q4",
+    "gemma2-27b-it-q4"
+  ],
+  "animation_prompt": [
+    "qwq-32b-preview-q4",
+    "qwen2.5-72b-instruct-q4",
+    "nemotron-70b-instruct-q4"
+  ],
+  "qwen_code_cli": [
+    "qwen2.5-coder-32b-instruct-q4",
+    "qwen2.5-72b-instruct-q4",
+    "llama3.1-70b-instruct-q4"
+  ],
+  "llm_studio": [
+    "llama3.1-70b-instruct-q4",
+    "mistral-large-2-instruct-q4",
+    "qwen2.5-coder-32b-instruct-q4"
+  ]
+}

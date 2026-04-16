@@ -3,31 +3,29 @@
 const { program } = require('commander');
 const chalk = require('chalk');
 const { version } = require('../package.json');
-const OllamaService = require('./services/ollama');
-const ClaudeService = require('./services/claude');
+const NIMService = require('./services/nim');
 const CodeGenCommand = require('./commands/codegen');
 const ChatCommand = require('./commands/chat');
 const ListCommand = require('./commands/list');
 const SetupCommand = require('./commands/setup');
 const config = require('./config');
 
-const ollama = new OllamaService(config.ollama);
-const claude = new ClaudeService(config.claude);
+const nim = new NIMService(config.nim);
 
 program
   .name('trconnects')
-  .description(chalk.cyan('🚀 Unified AI CLI - Ollama + Claude + Qwen + LLM Integration'))
+  .description(chalk.cyan('🚀 Unified AI CLI - NVIDIA NIM + Qwen routing + task profiles'))
   .version(version, '-v, --version')
   .usage('<command> [options]');
 
 // Chat command
 program
   .command('chat')
-  .description('Start interactive chat with selected model')
-  .option('-m, --model <model>', 'Model to use (ollama, claude)', 'ollama')
-  .option('-n, --name <name>', 'Specific model name (e.g., qwen2.5-coder, gpt-4)')
+  .description('Start interactive chat using NVIDIA NIM task profile')
+  .option('-t, --task <task>', 'Task profile (qwen_code_cli, claude_cli_style, ollama_launch_claude, llm_studio, chat, coding, reasoning)', config.nim.defaultTask)
+  .option('-n, --name <name>', 'Force a specific NIM model name (overrides task routing)')
   .action(async (options) => {
-    const chatCmd = new ChatCommand(ollama, claude, config);
+    const chatCmd = new ChatCommand(nim, config);
     await chatCmd.execute(options);
   });
 
@@ -35,14 +33,14 @@ program
 program
   .command('generate')
   .alias('gen')
-  .description('Generate code using AI')
-  .option('-m, --model <model>', 'Model to use (ollama, claude)', 'ollama')
-  .option('-n, --name <name>', 'Specific model name')
-  .option('-t, --type <type>', 'Code type (react, api, mobile, db, etc)')
+  .description('Generate code using NVIDIA NIM task-based 3-model routing')
+  .option('-k, --task <task>', 'Task profile (qwen_code_cli, claude_cli_style, ollama_launch_claude, llm_studio, chat, coding, reasoning)', config.nim.defaultTask)
+  .option('-n, --name <name>', 'Force a specific NIM model name (overrides task routing)')
+  .option('-t, --type <type>', 'Code type (react, api, mobile, db, python, general)')
   .option('-o, --output <file>', 'Output file path')
   .argument('<description>', 'What code to generate')
   .action(async (description, options) => {
-    const codegenCmd = new CodeGenCommand(ollama, claude, config);
+    const codegenCmd = new CodeGenCommand(nim, config);
     await codegenCmd.execute(description, options);
   });
 
@@ -50,56 +48,48 @@ program
 program
   .command('list')
   .alias('ls')
-  .description('List all available models')
-  .option('-s, --source <source>', 'Source to list (ollama, claude, all)', 'all')
+  .description('List NVIDIA NIM models and task model profiles')
+  .option('-s, --source <source>', 'Source to list (nim, profiles, all)', 'all')
   .action(async (options) => {
-    const listCmd = new ListCommand(ollama, claude, config);
+    const listCmd = new ListCommand(nim, config);
     await listCmd.execute(options);
   });
 
 // Setup command
 program
   .command('setup')
-  .description('Setup and configure trconnects')
-  .option('-m, --models', 'Install recommended models')
-  .option('-a, --all', 'Install all available models')
+  .description('Setup and validate NVIDIA NIM configuration')
+  .option('-v, --validate', 'Validate configured task profiles against NIM API')
   .action(async (options) => {
-    const setupCmd = new SetupCommand(ollama, config);
+    const setupCmd = new SetupCommand(nim, config);
     await setupCmd.execute(options);
   });
 
 // Status command
 program
   .command('status')
-  .description('Check connection status to all services')
+  .description('Check NVIDIA NIM connection status')
   .action(async () => {
     const spinner = require('ora')();
-    
-    spinner.start('Checking Ollama...');
-    const ollamaStatus = await ollama.checkConnection();
-    spinner.succeed(`Ollama: ${ollamaStatus ? chalk.green('✓ Connected') : chalk.red('✗ Offline')}`);
 
-    spinner.start('Checking Claude...');
-    const claudeStatus = claude.hasApiKey();
-    spinner.succeed(`Claude: ${claudeStatus ? chalk.green('✓ Configured') : chalk.yellow('⚠ Not configured')}`);
-    
+    spinner.start('Checking NVIDIA NIM API key...');
+    const keyStatus = nim.hasApiKey();
+    spinner.succeed(`NIM API key: ${keyStatus ? chalk.green('✓ Configured') : chalk.red('✗ Missing')}`);
+
+    spinner.start('Checking NVIDIA NIM connectivity...');
+    const nimStatus = await nim.checkConnection();
+    spinner.succeed(`NIM API: ${nimStatus ? chalk.green('✓ Connected') : chalk.red('✗ Unreachable/Unauthorized')}`);
+
     spinner.succeed(chalk.cyan('Status check complete!'));
   });
 
-// Pull model command
+// Pull model command (NIM is API-only)
 program
   .command('pull <model>')
-  .description('Pull a model from Ollama Hub')
+  .description('NIM API-only mode notice')
   .action(async (model) => {
-    const spinner = require('ora')('Pulling model...');
-    try {
-      spinner.start();
-      await ollama.pullModel(model);
-      spinner.succeed(chalk.green(`✓ Model ${model} pulled successfully`));
-    } catch (err) {
-      spinner.fail(chalk.red(`✗ Failed to pull model: ${err.message}`));
-      process.exit(1);
-    }
+    console.log(chalk.yellow(`NIM uses hosted API models, no local pull needed: ${model}`));
+    console.log(chalk.gray('Use: trconnects list --source profiles'));
   });
 
 // Config command

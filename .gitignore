@@ -1,1 +1,5 @@
 .env.local
+trconnects/sandbox/.env
+trconnects/sandbox/.sandbox-api.pid
+trconnects/sandbox/data/sandbox-api.log
+trconnects/sandbox/api/node_modules/
