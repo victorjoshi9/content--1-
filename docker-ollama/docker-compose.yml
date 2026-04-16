@@ -13,6 +13,7 @@ services:
       # Specify which models to pull on startup.
       # Includes the previously suggested coding/general models plus HF GGUF.
       # Note: This full list is large (tens of GB). Override MODELS for a lighter startup.
+      # Pulls happen sequentially during startup, so first boot can take significant time.
       MODELS: |
         qwen2.5-coder:latest
         deepseek-coder-v2:latest

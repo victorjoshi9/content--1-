@@ -17,13 +17,13 @@ echo "Pulling models..."
 MODELS="${MODELS:-qwen2.5-coder:1.5b}"
 
 # MODELS can be provided as a comma-separated or newline-separated list.
-echo "$MODELS" | tr ',' '\n' | while IFS= read -r model; do
+while IFS= read -r model; do
     model="$(echo "$model" | xargs)"
     [ -z "$model" ] && continue
 
     echo "Pulling model: $model"
     ollama pull "$model" || echo "Failed to pull $model, continuing..."
-done
+done < <(echo "$MODELS" | tr ',' '\n')
 
 echo "All models pulled!"
 
