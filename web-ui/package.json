@@ -1,7 +1,7 @@
 {
   "name": "ollama-web-ui",
   "version": "1.0.0",
-  "description": "Lovable.dev-like Web UI for Ollama models",
+  "description": "Triconnects Web UI for NVIDIA NIM task-routed models",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

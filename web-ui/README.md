@@ -1,30 +1,23 @@
-# Ollama Web UI - Lovable.dev-like Interface
+# Triconnects NIM Web UI
 
-A beautiful, modern Web UI for interacting with your local Ollama models.
+A web UI for your Triconnects platform using NVIDIA NIM API only.
 
 ## Features
 
-- Multi-model support
-- Beautiful dark theme
+- NVIDIA NIM API only (no Claude API, no Ollama API, no OpenAI API)
+- Task-based 3-model routing profiles
 - Real-time chat interface
-- Quick prompts for common tasks
-- Status indicator for Ollama connection
-- Code syntax highlighting
+- Profile switching for qwen_code_cli, claude_cli_style, ollama_launch_claude, llm_studio
+- Force-model override when needed
 
 ## Quick Start
 
 ### Prerequisites
 
-1. Make sure Ollama is running:
-```bash
-ollama serve
-```
+1. Set your NVIDIA NIM API key:
 
-2. Pull some models:
 ```bash
-ollama pull qwen2.5-coder:latest
-ollama pull qwen2.5:latest
-ollama pull deepseek-coder-v2:latest
+export NIM_API_KEY=nvapi-...
 ```
 
 ### Installation
@@ -45,7 +38,7 @@ Or for development:
 npm run dev
 ```
 
-Then open http://localhost:3000 in your browser.
+Then open http://localhost:3000 in your browser and connect with your NIM key.
 
 ## Project Structure
 
@@ -62,25 +55,25 @@ web-ui/
 └── package.json      # Dependencies
 ```
 
-## Available Models
+## Task Profiles
 
-After pulling the models, they will automatically appear in the model selector:
+Each profile routes requests through 3 assigned models in priority order:
 
-- **qwen2.5-coder:latest** - Best for coding tasks
-- **qwen2.5:latest** - General purpose
-- **deepseek-coder-v2:latest** - Advanced coding
-- **glm4:latest** - Multilingual support
-- **nemotron-mini:latest** - NVIDIA optimized
-- **codellama:latest** - Meta's code model
-- **llama3.2:latest** - Fast general purpose
+- qwen_code_cli
+- claude_cli_style
+- ollama_launch_claude
+- llm_studio
+- chat
+- coding
+- reasoning
 
 ## API Endpoints
 
-The server proxies these Ollama endpoints:
+The server exposes these NIM-only endpoints:
 
-- `GET /api/tags` - List available models
-- `POST /api/chat` - Send chat messages
-- `POST /api/generate` - Generate text
+- `POST /api/nim/models` - List available NIM models
+- `POST /api/nim/chat` - Send chat with task-based model fallback
+- `GET /api/nim/profiles` - Get task-to-model profile map
 
 ## Customization
 
@@ -95,16 +88,11 @@ Edit CSS variables in `src/index.css`
 
 ## Troubleshooting
 
-### "Ollama not running" error
-Make sure Ollama is running:
-```bash
-ollama serve
-```
+### "NIM key missing" error
+Set your key:
 
-### No models showing up
-Pull a model:
 ```bash
-ollama pull qwen2.5-coder:latest
+export NIM_API_KEY=nvapi-...
 ```
 
 ### Port already in use

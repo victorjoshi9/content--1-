@@ -4,42 +4,39 @@ const fs = require('fs-extra');
 const path = require('path');
 
 class CodeGenCommand {
-  constructor(ollama, claude, config) {
-    this.ollama = ollama;
-    this.claude = claude;
+  constructor(nim, config) {
+    this.nim = nim;
     this.config = config;
   }
 
   async execute(description, options) {
-    const provider = options.model;
+    const task = options.task || options.model || this.config.nim.defaultTask;
     const modelName = options.name;
     const codeType = options.type || 'general';
     const outputFile = options.output;
+    const routed = this.nim.getTaskModels(task);
 
     console.log(chalk.cyan(`\n✨ Generating ${codeType} code`));
-    console.log(chalk.gray(`Provider: ${provider}`));
+    console.log(chalk.gray('Provider: NVIDIA NIM'));
+    console.log(chalk.gray(`Task: ${routed.selectedTask}`));
+    if (!modelName) {
+      console.log(chalk.gray(`Fallback chain: ${routed.models.join(' -> ')}`));
+    }
     console.log(chalk.gray(`Description: ${description}\n`));
 
     const spinner = ora('Generating code...').start();
 
     try {
-      let code;
       const systemPrompt = this.getSystemPrompt(codeType);
       const userPrompt = `Generate ${codeType} code for: ${description}`;
-
-      if (provider === 'claude') {
-        code = await this.claude.generateCode(description, codeType, {
-          model: modelName
-        });
-      } else {
-        const model = modelName || this.config.ollama.defaultModel;
-        const messages = [
-          { role: 'user', content: userPrompt }
-        ];
-        code = await this.ollama.chat(model, messages, { system: systemPrompt });
-      }
+      const result = await this.nim.generateFromTask(task, userPrompt, systemPrompt, {
+        model: modelName,
+        temperature: 0.2
+      });
+      const code = result.content;
 
       spinner.succeed(chalk.green('✓ Code generated successfully\n'));
+      console.log(chalk.gray(`Model used: ${result.model}`));
 
       if (outputFile) {
         await fs.ensureDir(path.dirname(outputFile));

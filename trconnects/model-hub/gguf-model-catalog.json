@@ -1,0 +1,76 @@
+{
+  "version": "1.0.0",
+  "note": "10 GGUF models for app building tasks. Upload to your cloud storage and serve via API catalog.",
+  "models": [
+    {
+      "id": "qwen2.5-coder-32b-instruct-q4",
+      "taskTags": ["web", "webapp", "android", "qwen_code_cli"],
+      "hfRepo": "bartowski/Qwen2.5-Coder-32B-Instruct-GGUF",
+      "fileName": "Qwen2.5-Coder-32B-Instruct-Q4_K_M.gguf",
+      "sizeGB": 20.5
+    },
+    {
+      "id": "qwen2.5-72b-instruct-q4",
+      "taskTags": ["webapp", "ui_design", "animation_prompt"],
+      "hfRepo": "bartowski/Qwen2.5-72B-Instruct-GGUF",
+      "fileName": "Qwen2.5-72B-Instruct-Q4_K_M.gguf",
+      "sizeGB": 42.3
+    },
+    {
+      "id": "llama3.1-70b-instruct-q4",
+      "taskTags": ["chatbot", "web", "llm_studio"],
+      "hfRepo": "bartowski/Llama-3.1-70B-Instruct-GGUF",
+      "fileName": "Llama-3.1-70B-Instruct-Q4_K_M.gguf",
+      "sizeGB": 39.6
+    },
+    {
+      "id": "llama3.1-8b-instruct-q4",
+      "taskTags": ["chatbot", "low-cost"],
+      "hfRepo": "bartowski/Llama-3.1-8B-Instruct-GGUF",
+      "fileName": "Llama-3.1-8B-Instruct-Q4_K_M.gguf",
+      "sizeGB": 4.9
+    },
+    {
+      "id": "nemotron-70b-instruct-q4",
+      "taskTags": ["chatbot", "reasoning", "ollama_launch_claude"],
+      "hfRepo": "bartowski/Llama-3.1-Nemotron-70B-Instruct-GGUF",
+      "fileName": "Llama-3.1-Nemotron-70B-Instruct-Q4_K_M.gguf",
+      "sizeGB": 40.1
+    },
+    {
+      "id": "mixtral-8x7b-instruct-q4",
+      "taskTags": ["web", "webapp", "chatbot"],
+      "hfRepo": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
+      "fileName": "mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
+      "sizeGB": 26.8
+    },
+    {
+      "id": "mistral-large-2-instruct-q4",
+      "taskTags": ["ui_design", "chatbot", "llm_studio"],
+      "hfRepo": "bartowski/Mistral-Large-Instruct-2407-GGUF",
+      "fileName": "Mistral-Large-Instruct-2407-Q4_K_M.gguf",
+      "sizeGB": 69.0
+    },
+    {
+      "id": "gemma2-27b-it-q4",
+      "taskTags": ["ui_design", "prompting", "chatbot"],
+      "hfRepo": "bartowski/gemma-2-27b-it-GGUF",
+      "fileName": "gemma-2-27b-it-Q4_K_M.gguf",
+      "sizeGB": 17.0
+    },
+    {
+      "id": "deepseek-r1-distill-70b-q4",
+      "taskTags": ["android", "reasoning", "code-review"],
+      "hfRepo": "bartowski/DeepSeek-R1-Distill-Llama-70B-GGUF",
+      "fileName": "DeepSeek-R1-Distill-Llama-70B-Q4_K_M.gguf",
+      "sizeGB": 39.5
+    },
+    {
+      "id": "qwq-32b-preview-q4",
+      "taskTags": ["reasoning", "animation_prompt", "workflow-planning"],
+      "hfRepo": "bartowski/QwQ-32B-Preview-GGUF",
+      "fileName": "QwQ-32B-Preview-Q4_K_M.gguf",
+      "sizeGB": 20.7
+    }
+  ]
+}

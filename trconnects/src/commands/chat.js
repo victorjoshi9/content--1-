@@ -3,20 +3,24 @@ const readline = require('readline');
 const ora = require('ora');
 
 class ChatCommand {
-  constructor(ollama, claude, config) {
-    this.ollama = ollama;
-    this.claude = claude;
+  constructor(nim, config) {
+    this.nim = nim;
     this.config = config;
   }
 
   async execute(options) {
-    const provider = options.model;
+    const task = options.task || options.model || this.config.nim.defaultTask;
     const modelName = options.name;
+    const routed = this.nim.getTaskModels(task);
 
     console.log(chalk.cyan('\n🚀 Starting Chat Session'));
-    console.log(chalk.gray(`Provider: ${provider}`));
+    console.log(chalk.gray('Provider: NVIDIA NIM'));
+    console.log(chalk.gray(`Task: ${routed.selectedTask}`));
+    if (!modelName) {
+      console.log(chalk.gray(`Fallback chain: ${routed.models.join(' -> ')}`));
+    }
     if (modelName) {
-      console.log(chalk.gray(`Model: ${modelName}`));
+      console.log(chalk.gray(`Forced model: ${modelName}`));
     }
     console.log(chalk.gray('Type "exit" to quit\n'));
 
@@ -44,19 +48,13 @@ class ChatCommand {
 
         const spinner = ora('Thinking...').start();
         try {
-          let response;
-
-          if (provider === 'claude') {
-            response = await this.claude.chat(messages, { model: modelName });
-          } else {
-            const model = modelName || this.config.ollama.defaultModel;
-            response = await this.ollama.chat(model, messages);
-          }
+          const result = await this.nim.chatWithTask(task, messages, { model: modelName });
+          const response = result.content;
 
           messages.push({ role: 'assistant', content: response });
           
           spinner.stop();
-          console.log(chalk.green('Assistant: ') + response + '\n');
+          console.log(chalk.green(`Assistant (${result.model}): `) + response + '\n');
         } catch (error) {
           spinner.fail(chalk.red(`Error: ${error.message}`));
         }
