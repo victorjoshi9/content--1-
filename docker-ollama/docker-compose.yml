@@ -13,7 +13,8 @@ services:
       # Specify which models to pull on startup.
       # Includes the previously suggested coding/general models plus HF GGUF.
       # Note: This full list is large (tens of GB). Override MODELS for a lighter startup.
-      MODELS: "qwen2.5-coder:latest,deepseek-coder-v2:latest,qwen2.5:latest,llama3.2:latest,glm4:latest,nemotron-mini:latest,codellama:latest,hf.co/Jiunsong/supergemma4-26b-uncensored-gguf-v2:Q4_K_M"
+      MODELS: >-
+        qwen2.5-coder:latest,deepseek-coder-v2:latest,qwen2.5:latest,llama3.2:latest,glm4:latest,nemotron-mini:latest,codellama:latest,hf.co/Jiunsong/supergemma4-26b-uncensored-gguf-v2:Q4_K_M
       # Web UI connects to local Ollama
       OLLAMA_HOST: "localhost:11434"
     volumes:
