@@ -31,6 +31,7 @@ services:
     deploy:
       resources:
         limits:
+          # Baseline target requested for this sandbox. Increase for heavier concurrent model usage.
           cpus: "8.0"
           memory: 32G
         # For GPU support (NVIDIA), add reservations under this same deploy.resources block:
