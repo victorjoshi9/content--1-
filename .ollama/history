@@ -1,0 +1,2 @@
+ollama run fredrezones55/qwen3.5-opus:9b
+exit

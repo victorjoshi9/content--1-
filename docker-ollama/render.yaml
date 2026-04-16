@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ollama-web-ui
+    env: docker
+    region: oregon
+    plan: free
+    dockerfilePath: ./docker-ollama/Dockerfile
+    envVars:
+      - key: MODELS
+        value: qwen2.5-coder:latest,qwen2.5:latest
+      - key: OLLAMA_HOST
+        value: localhost:11434
+    disk:
+      name: ollama-models
+      mountPath: /root/.ollama
+      sizeGB: 10
+    healthCheckPath: /api/tags
+    autoDeploy: true

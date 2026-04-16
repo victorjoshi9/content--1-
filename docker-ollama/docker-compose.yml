@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  ollama-webui:
+    build:
+      context: ..
+      dockerfile: docker-ollama/Dockerfile
+    container_name: ollama-complete
+    ports:
+      - "11434:11434"  # Ollama API
+      - "3000:3000"    # Web UI
+    environment:
+      # Specify which models to pull on startup
+      MODELS: "qwen2.5-coder:latest,qwen2.5:latest,llama3.2:latest"
+      # Web UI connects to local Ollama
+      OLLAMA_HOST: "localhost:11434"
+    volumes:
+      # Persist models across restarts (optional - remove for ephemeral)
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    # For GPU support (NVIDIA)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+volumes:
+  ollama-data:

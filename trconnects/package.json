@@ -1,0 +1,34 @@
+{
+  "name": "trconnects",
+  "version": "1.0.0",
+  "description": "Unified CLI for Ollama, Claude, Qwen, and LLM integration",
+  "main": "src/index.js",
+  "bin": {
+    "trconnects": "./bin/trconnects"
+  },
+  "scripts": {
+    "start": "node bin/trconnects",
+    "dev": "node bin/trconnects",
+    "install-models": "node scripts/install-models.js",
+    "setup": "node scripts/setup.js"
+  },
+  "keywords": ["cli", "ollama", "claude", "qwen", "llm", "ai", "code-generation"],
+  "author": "trconnects",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
+    "axios": "^1.6.2",
+    "ora": "^5.4.1",
+    "inquirer": "^8.2.5",
+    "fs-extra": "^11.1.1",
+    "cli-table3": "^0.6.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

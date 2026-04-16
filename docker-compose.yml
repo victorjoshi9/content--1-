@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  ollama-web-ui:
+    build:
+      context: ./web-ui
+      dockerfile: Dockerfile
+    container_name: ollama-web-ui
+    ports:
+      - "3000:3000"
+    environment:
+      # Host networking for Docker on Linux - connect to host Ollama
+      - OLLAMA_HOST=host.docker.internal:11434
+      - MODELS=qwen2.5-coder:1.5b
+    extra_hosts:
+      # Allow container to reach host Ollama service
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - ollama-network
+
+networks:
+  ollama-network:
+    driver: bridge

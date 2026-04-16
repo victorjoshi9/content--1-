@@ -1,0 +1,27 @@
+app = "ollama-web-ui"
+primary_region = "ord"
+
+[build]
+dockerfile = "docker-ollama/Dockerfile"
+
+[env]
+MODELS = "qwen2.5-coder:latest,qwen2.5:latest"
+OLLAMA_HOST = "localhost:11434"
+
+[http_service]
+internal_port = 3000
+force_https = true
+auto_stop_machines = true
+auto_start_machines = true
+min_machines_running = 0
+processes = ["app"]
+
+[[vm]]
+cpu_kind = "shared"
+cpus = 2
+memory_mb = 4096
+
+# Persistent volume for models (create with: fly volumes create ollama_data)
+[[mounts]]
+source = "ollama_data"
+destination = "/root/.ollama"

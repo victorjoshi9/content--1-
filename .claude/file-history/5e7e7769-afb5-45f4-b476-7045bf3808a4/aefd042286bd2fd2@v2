@@ -1,0 +1,222 @@
+import React, { useState, useEffect, useRef } from 'react'
+
+function App() {
+  const [models, setModels] = useState([])
+  const [selectedModel, setSelectedModel] = useState('')
+  const [messages, setMessages] = useState([])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [ollamaStatus, setOllamaStatus] = useState({ connected: false, error: '' })
+  const messagesEndRef = useRef(null)
+
+  useEffect(() => {
+    fetchModels()
+  }, [])
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  const fetchModels = async () => {
+    try {
+      const response = await fetch('http://localhost:11434/api/tags')
+      if (response.ok) {
+        const data = await response.json()
+        setModels(data.models || [])
+        if (data.models?.length > 0) {
+          setSelectedModel(data.models[0].name)
+        }
+        setOllamaStatus({ connected: true, error: '' })
+      } else {
+        throw new Error('Failed to fetch models')
+      }
+    } catch (error) {
+      setOllamaStatus({ connected: false, error: 'Ollama not running on localhost:11434' })
+    }
+  }
+
+  const sendMessage = async () => {
+    if (!input.trim() || !selectedModel || isLoading) return
+
+    const userMessage = { role: 'user', content: input.trim() }
+    setMessages(prev => [...prev, userMessage])
+    setInput('')
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('http://localhost:11434/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: selectedModel,
+          messages: [...messages, userMessage],
+          stream: false
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to get response')
+
+      const data = await response.json()
+      const assistantMessage = { role: 'assistant', content: data.message?.content || 'No response' }
+      setMessages(prev => [...prev, assistantMessage])
+    } catch (error) {
+      const errorMessage = { role: 'assistant', content: `Error: ${error.message}` }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
+    }
+  }
+
+  const clearChat = () => {
+    setMessages([])
+  }
+
+  const quickPrompts = [
+    { title: 'Create React App', desc: 'Build a React component' },
+    { title: 'Python API', desc: 'Create a FastAPI endpoint' },
+    { title: 'Mobile App', desc: 'React Native screen' },
+    { title: 'Database Schema', desc: 'Design a PostgreSQL schema' }
+  ]
+
+  const handleQuickPrompt = (prompt) => {
+    setInput(prompt)
+  }
+
+  return (
+    <div className="app">
+      <aside className="sidebar">
+        <div className="sidebar-header">
+          <h1>Ollama Web UI</h1>
+        </div>
+
+        <div className="model-selector">
+          <label>Model</label>
+          <select
+            className="model-select"
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+          >
+            {models.map((model) => (
+              <option key={model.name} value={model.name}>
+                {model.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button className="new-chat-btn" onClick={clearChat}>
+          <span>+</span> New Chat
+        </button>
+
+        <div className="chat-history">
+          {messages.length === 0 && (
+            <div style={{ padding: '16px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+              No chat history
+            </div>
+          )}
+        </div>
+      </aside>
+
+      <main className="main-content">
+        <div className="chat-container">
+          {messages.length === 0 ? (
+            <div className="welcome-screen">
+              <h2>Build Apps with AI</h2>
+              <p>Choose a model and start creating. Your local AI assistant for web, mobile, and more.</p>
+              <div className="quick-prompts">
+                {quickPrompts.map((prompt, i) => (
+                  <button
+                    key={i}
+                    className="quick-prompt-btn"
+                    onClick={() => handleQuickPrompt(prompt.title)}
+                  >
+                    <h3>{prompt.title}</h3>
+                    <p>{prompt.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="messages">
+              {messages.map((msg, i) => (
+                <div key={i} className={`message ${msg.role}`}>
+                  <div className="message-avatar">
+                    {msg.role === 'user' ? '👤' : '🤖'}
+                  </div>
+                  <div className="message-content">
+                    {msg.content.split('```').map((part, i) => {
+                      if (i % 2 === 1) {
+                        const [lang, ...code] = part.split('\n')
+                        return (
+                          <pre key={i}>
+                            <code>{code.join('\n')}</code>
+                          </pre>
+                        )
+                      }
+                      return <span key={i}>{part}</span>
+                    })}
+                  </div>
+                </div>
+              ))}
+              {isLoading && (
+                <div className="message assistant">
+                  <div className="message-avatar">🤖</div>
+                  <div className="message-content">
+                    <div className="loading-indicator">
+                      <div className="loading-dot"></div>
+                      <div className="loading-dot"></div>
+                      <div className="loading-dot"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
+
+        <div className="input-container">
+          <div className="input-wrapper">
+            <textarea
+              className="message-input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Describe what you want to build..."
+              rows={1}
+              style={{ minHeight: '48px' }}
+            />
+            <button
+              className="send-btn"
+              onClick={sendMessage}
+              disabled={!input.trim() || !selectedModel || isLoading}
+            >
+              Send
+            </button>
+          </div>
+        </div>
+
+        <div className="status-bar">
+          <div className="status-indicator">
+            <div className={`status-dot ${ollamaStatus.connected ? '' : 'error'}`}></div>
+            <span>
+              {ollamaStatus.connected
+                ? `Connected to Ollama (${models.length} models)`
+                : ollamaStatus.error}
+            </span>
+          </div>
+          <span>{selectedModel || 'No model selected'}</span>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+export default App

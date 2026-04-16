@@ -1,0 +1,11 @@
+{
+  "integrations": {
+    "claude": {
+      "models": [
+        "qwen3.5:cloud"
+      ]
+    }
+  },
+  "last_model": "gemma4",
+  "last_selection": "run"
+}
