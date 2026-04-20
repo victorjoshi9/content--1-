@@ -23,6 +23,19 @@ app.get('/health', (_req, res) => {
   });
 });
 
+function applyAnthropicHeaders(proxyReq, req) {
+  const incomingKey = req.headers['x-api-key'];
+  if (!incomingKey && ANTHROPIC_API_KEY) {
+    proxyReq.setHeader('x-api-key', ANTHROPIC_API_KEY);
+  }
+  if (!req.headers['anthropic-version']) {
+    proxyReq.setHeader('anthropic-version', ANTHROPIC_VERSION);
+  }
+  if (!req.headers['content-type']) {
+    proxyReq.setHeader('content-type', 'application/json');
+  }
+}
+
 app.use(
   '/ollama',
   createProxyMiddleware({
@@ -40,39 +53,17 @@ app.use(
     changeOrigin: true,
     pathRewrite: { '^/anthropic': '' },
     logLevel: 'warn',
-    onProxyReq(proxyReq, req) {
-      const incomingKey = req.headers['x-api-key'];
-      if (!incomingKey && ANTHROPIC_API_KEY) {
-        proxyReq.setHeader('x-api-key', ANTHROPIC_API_KEY);
-      }
-      if (!req.headers['anthropic-version']) {
-        proxyReq.setHeader('anthropic-version', ANTHROPIC_VERSION);
-      }
-      if (!req.headers['content-type']) {
-        proxyReq.setHeader('content-type', 'application/json');
-      }
-    },
+    onProxyReq: applyAnthropicHeaders,
   })
 );
 
 app.use(
-  '/v1',
+  ['/v1/messages', '/v1/models'],
   createProxyMiddleware({
     target: ANTHROPIC_URL,
     changeOrigin: true,
     logLevel: 'warn',
-    onProxyReq(proxyReq, req) {
-      const incomingKey = req.headers['x-api-key'];
-      if (!incomingKey && ANTHROPIC_API_KEY) {
-        proxyReq.setHeader('x-api-key', ANTHROPIC_API_KEY);
-      }
-      if (!req.headers['anthropic-version']) {
-        proxyReq.setHeader('anthropic-version', ANTHROPIC_VERSION);
-      }
-      if (!req.headers['content-type']) {
-        proxyReq.setHeader('content-type', 'application/json');
-      }
-    },
+    onProxyReq: applyAnthropicHeaders,
   })
 );
 
